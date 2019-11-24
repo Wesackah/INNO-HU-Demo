@@ -2,7 +2,8 @@ import pandas as pd
 import librosa
 import librosa.display
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 from keras.models import model_from_json
 from sklearn.preprocessing import LabelEncoder
 import os

@@ -24,9 +24,22 @@ def results():
         upload_file.save(os.path.join(UPLOAD_FOLDER, filename))
         audio_converter.convert(UPLOAD_FOLDER)
         wav_splitter.split_wav(os.path.join(UPLOAD_FOLDER, filename))
-        emotionvalues, badscore = backend_prediction.predict()
-        return render_template("img.html", badvalues=badscore, emotions=emotionvalues)
-        # return render_template("test.html", badvalues=badscore, emotions=emotionvalues)
+        #emotionvalues, badscore = backend_prediction.predict()
+    badscore = {1: 0.2658739128383014, 2: 0.5424062308308527, 3: 0.8564104149701518, 4: 0.47276983485868906, 5: 0.6748449524351346}
+    # return render_template("img.html", badvalues=badscore, emotions=emotionvalues)
+    # return render_template("result.html", badvalues=badscore)
+    emotions = {"chunk0": {"female_angry": 0.003969725, "male_angry": 0.23694685, "male_fearful": 0.023013767,
+                           "male_happy": 0.73409116, "male_sad": 0.0019435697},
+                "chunk1": {"female_angry": 0.0003118647, "female_happy": 0.00015557489, "male_angry": 0.16601905,
+                           "male_fearful": 0.19517009, "male_happy": 0.4574199, "male_sad": 0.18090522},
+                "chunk2": {"female_angry": 0.0075172554, "female_happy": 0.05306731, "male_angry": 0.8482935,
+                           "male_happy": 0.09052235, "male_sad": 0.0005063273},
+                "chunk3": {"female_angry": 0.011409758, "female_happy": 0.00096154725, "male_angry": 0.41289842,
+                           "male_fearful": 0.039059103, "male_happy": 0.52626854, "male_sad": 0.00940254},
+                "chunk4": {"female_angry": 0.059095614, "female_happy": 0.012637476, "male_angry": 0.09841791,
+                           "male_fearful": 0.510204, "male_happy": 0.31251594, "male_sad": 0.0071274047}}
+    JsonEmotions = json.dumps(emotions)
+    return render_template("result.html", emotions=JsonEmotions, badvalues=badscore)
     return "Error"
 
 
@@ -41,4 +54,4 @@ def EmptyFolders():
         for file in files:
             os.remove(os.path.join(root, file))
 if __name__ == "__main__":
-    app.run(host="0.0.0.0",port=5000,debug=True,threaded=False,use_reloader=False)
+    app.run(host="127.0.0.1",port=5000,debug=True,threaded=False,use_reloader=False)

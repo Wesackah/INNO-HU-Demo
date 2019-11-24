@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Grafiek(en)</title>
+</head>
+<body>
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<div id="chart_div"></div>
+
+<script>
+    google.charts.load('current', {packages: ['corechart', 'line']});
+    google.charts.setOnLoadCallback(drawBasic);
+
+    function drawBasic() {
+        let obj = {{ badvalues }} ;
+        let keys = Object.keys(obj);
+
+        const array = [];
+        array.push(["X","Y"])
+        keys.forEach(function(key) {
+           array.push([parseInt(key), obj[key]]);
+        });
+
+        console.log(array);
+        var data = google.visualization.arrayToDataTable(array);
+{#        data.addColumn('number', 'X');
+        data.addColumn('number', 'Negative emotion');#}
+
+        {#data.addRows(array);#}
+
+        var options = {
+            legend: 'none',
+            width: 800,
+            height: 300,
+            hAxis: {
+                minValue: 0,
+                title: 'Fragment'
+            },
+            vAxis: {
+                title: 'Predicted chance'
+            },
+            curveType: 'function',
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+    }
+
+</script>
+<script>
+    var allEmotions = {{ emotions | safe }};
+    console.log(allEmotions);
+    let pieArray = [];
+    for(var chunkEmotions in allEmotions){
+
+        let chunkArray = [];
+        {#console.log(chunkEmotions);#}
+        {#console.log(allEmotions[chunkEmotions]);#}
+        let emotionArray = [];
+        for(var emotion in allEmotions[chunkEmotions]){
+
+            emotionArray.push([emotion,allEmotions[chunkEmotions][emotion]]);
+            {#console.log(emotion);#}
+            {#console.log(allEmotions[chunkEmotions][emotion]);#}
+
+        }
+        pieArray.push(emotionArray)
+    }
+
+    console.log(pieArray);
+    console.log(pieArray[0]);
+
+</script>
+</body>
+{% extends "layout.html" %}
+</html>
