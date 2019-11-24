@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<div id="chart_div"></div>
+
+<script>
+    google.charts.load('current', {packages: ['corechart', 'line']});
+    google.charts.setOnLoadCallback(drawBasic);
+
+    function drawBasic() {
+        let obj = {{ badvalues }} ;
+        let result = Object.keys(obj).map(function(key) {
+            return [Number(key)+1, obj[key]];
+        });
+        console.log(result);
+        var data = new google.visualization.DataTable();
+        data.addColumn('number', 'X');
+        data.addColumn('number', 'Negative emotion');
+
+        data.addRows(result);
+
+        var options = {
+            width: 600,
+            height: 300,
+            hAxis: {
+                title: 'Fragment'
+            },
+            vAxis: {
+                title: 'Predicted chance'
+            }
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+
+        chart.draw(data, options);
+    }
+
+</script>
+</body>
+</html>
