@@ -1,21 +1,22 @@
 import json
 
-from flask import Flask,render_template,jsonify,request
-from werkzeug import secure_filename
-import base64,os
+from flask import Flask, render_template, jsonify, request
+from werkzeug.utils import secure_filename
+import base64, os
 
 import audio_converter
 import backend_prediction
 import wav_splitter
 
 app = Flask(__name__)
-UPLOAD_FOLDER='temp_upload'
+UPLOAD_FOLDER = 'temp_upload'
+
 
 @app.route("/")
 def index():
     return render_template("index.html")
 
-@app.route("/results",methods=['GET','POST'])
+@app.route("/results", methods=['GET', 'POST'])
 def results():
     if request.method == 'POST':
         EmptyFolders()
@@ -24,10 +25,11 @@ def results():
         upload_file.save(os.path.join(UPLOAD_FOLDER, filename))
         audio_converter.convert(UPLOAD_FOLDER)
         wav_splitter.split_wav(os.path.join(UPLOAD_FOLDER, filename))
-        #emotionvalues, badscore = backend_prediction.predict()
-    badscore = {1: 0.2658739128383014, 2: 0.5424062308308527, 3: 0.8564104149701518, 4: 0.47276983485868906, 5: 0.6748449524351346}
-    # return render_template("img.html", badvalues=badscore, emotions=emotionvalues)
-    # return render_template("result.html", badvalues=badscore)
+        emotions, badscore = backend_prediction.predict()
+        JsonEmotions = json.dumps(emotions)
+        return render_template("result.html", emotions=JsonEmotions, badvalues=badscore)
+    badtest = {1: 0.2658739128383014, 2: 0.5424062308308527, 3: 0.8564104149701518, 4: 0.47276983485868906,
+                5: 0.6748449524351346}
     emotions = {"chunk0": {"female_angry": 0.003969725, "male_angry": 0.23694685, "male_fearful": 0.023013767,
                            "male_happy": 0.73409116, "male_sad": 0.0019435697},
                 "chunk1": {"female_angry": 0.0003118647, "female_happy": 0.00015557489, "male_angry": 0.16601905,
@@ -38,10 +40,9 @@ def results():
                            "male_fearful": 0.039059103, "male_happy": 0.52626854, "male_sad": 0.00940254},
                 "chunk4": {"female_angry": 0.059095614, "female_happy": 0.012637476, "male_angry": 0.09841791,
                            "male_fearful": 0.510204, "male_happy": 0.31251594, "male_sad": 0.0071274047}}
-    JsonEmotions = json.dumps(emotions)
-    return render_template("result.html", emotions=JsonEmotions, badvalues=badscore)
-    return "Error"
-
+    jsonEmotions = json.dumps(emotions)
+    return render_template("result.html", badvalues=badtest, emotions=jsonEmotions)
+    # return "Error"
 
 
 def EmptyFolders():
@@ -53,5 +54,7 @@ def EmptyFolders():
     for root, dirs, files in os.walk(filesFolder):
         for file in files:
             os.remove(os.path.join(root, file))
+
+
 if __name__ == "__main__":
-    app.run(host="127.0.0.1",port=5000,debug=True,threaded=False,use_reloader=False)
+    app.run(host="127.0.0.1", port=5000, debug=False, threaded=False, use_reloader=False)

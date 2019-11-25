@@ -28,7 +28,7 @@ def predict():
     allEmotionDict = {}
     bad_val = 0
     bad_array = [0, 2, 4, 5, 7, 9]
-    iteration = 0
+    iteration = 1
     Model_filename = 'models/Emotion_Voice_Detection_Model.h5'
     json_file = open('models/model.json', 'r')
     loaded_model_json = json_file.read()
@@ -38,7 +38,7 @@ def predict():
 
     for (dirpath, dirnames, filenames) in os.walk("temp_fragment/"):
         for file_name in filenames:
-            allEmotionDict[iteration] = {}
+            allEmotionDict["chunk"+str(iteration)] = {}
             X, sample_rate = librosa.load(os.path.join(dirpath,file_name),
                                           res_type='kaiser_fast',
                                           duration=2.5,
@@ -57,8 +57,8 @@ def predict():
 
                 if i in bad_array:
                     bad_val = bad_val + preds[0][i]
-                if preds[0][i] * 100 > 0.01:
-                    allEmotionDict[iteration][pred_to_class[i]] = preds[0][i]
+                if preds[0][i] * 100 > 0.1:
+                    allEmotionDict["chunk"+str(iteration)][pred_to_class[i]] = str(preds[0][i])
 
             badValDict[iteration] = bad_val
             bad_val = 0

@@ -3,43 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <title>Grafiek(en)</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
 <body>
 
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<div id="chart_div"></div>
 
-<script>
+<div id="chart_div"></div>
+<div id="piechart_div"></div>
+
+<script type="text/javascript">
+    var allEmotions = {{ emotions | safe }};
+    let pieArray = [];
+    for (var chunkEmotions in allEmotions) {
+        let chunkArray = [];
+        let emotionArray = [['Emotion', 'Value']];
+        for (var emotion in allEmotions[chunkEmotions]) {
+            emotionArray.push([emotion, parseFloat(allEmotions[chunkEmotions][emotion])]);
+        }
+        pieArray.push(emotionArray)
+    }
+    console.log(pieArray);
     google.charts.load('current', {packages: ['corechart', 'line']});
     google.charts.setOnLoadCallback(drawBasic);
+    google.charts.setOnLoadCallback(drawChart);
 
     function drawBasic() {
-        let obj = {{ badvalues }} ;
+        let obj = {{ badvalues }};
         let keys = Object.keys(obj);
 
         const array = [];
-        array.push(["X","Y"])
-        keys.forEach(function(key) {
-           array.push([parseInt(key), obj[key]]);
+        array.push(["X", "Y"]);
+        keys.forEach(function (key) {
+            array.push([parseInt(key), obj[key]]);
         });
-
-        console.log(array);
         var data = google.visualization.arrayToDataTable(array);
-{#        data.addColumn('number', 'X');
-        data.addColumn('number', 'Negative emotion');#}
-
-        {#data.addRows(array);#}
 
         var options = {
             legend: 'none',
-            width: 800,
-            height: 300,
+            title: 'Analysis of file',
+            width: 1000,
+            height: 450,
             hAxis: {
                 minValue: 0,
                 title: 'Fragment'
             },
             vAxis: {
-                title: 'Predicted chance'
+                title: 'Predicted chance of negative emotions'
             },
             curveType: 'function',
         };
@@ -47,31 +56,27 @@
         var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
         chart.draw(data, options);
     }
+    function drawChart() {
+        if (pieArray != null) {
+            for (var chunk in pieArray) {
+                let dataArray = pieArray[chunk];
+                let toInsertDiv = document.createElement("div");
+                let divId = "piediv_" + chunk.toString();
+                toInsertDiv.id = divId;
+                let pieDiv = document.getElementById("piechart_div");
+                pieDiv.appendChild(toInsertDiv);
 
-</script>
-<script>
-    var allEmotions = {{ emotions | safe }};
-    console.log(allEmotions);
-    let pieArray = [];
-    for(var chunkEmotions in allEmotions){
-
-        let chunkArray = [];
-        {#console.log(chunkEmotions);#}
-        {#console.log(allEmotions[chunkEmotions]);#}
-        let emotionArray = [];
-        for(var emotion in allEmotions[chunkEmotions]){
-
-            emotionArray.push([emotion,allEmotions[chunkEmotions][emotion]]);
-            {#console.log(emotion);#}
-            {#console.log(allEmotions[chunkEmotions][emotion]);#}
-
+                var data = google.visualization.arrayToDataTable(dataArray);
+                var options = {
+                    title: 'Emotions of chunk ' + (parseInt(chunk) + 1).toString(),
+                    height: 600,
+                    width: 900
+                }
+                var chart = new google.visualization.PieChart(document.getElementById(divId));
+                chart.draw(data, options);
+            }
         }
-        pieArray.push(emotionArray)
     }
-
-    console.log(pieArray);
-    console.log(pieArray[0]);
-
 </script>
 </body>
 {% extends "layout.html" %}
