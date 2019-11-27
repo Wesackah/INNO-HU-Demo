@@ -3,20 +3,12 @@
 The aim of this project is to provide a simple way you can quickly serve your tensorflow model.
 > Note: This code is not optimized for production enviroment.
 
-Am using the model trained on the ImageNet Large Visual Recognition Challenge dataset which is described in 
-[this](https://codelabs.developers.google.com/codelabs/tensorflow-for-poets) codelab.
+Am using the model trained with Convolutional Neural Network, described in https://github.com/MITESHPUTHRANNEU/Speech-Emotion-Analyzer 
 # Requirement
 - Python >=2.7 or >=3.4
-- TensorFlow >=1.0
-- cv2 for image preprocessing [Feel free to use other libraries]
+- TensorFlow >=1.0 & <2.0
 - Flask
 
- # Classifications
-- daisy
-- dandelion
-- roses
-- sunflowers
-- tulip
 
 # How to run
  $python app.py
